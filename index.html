@@ -1,78 +1,117 @@
-<!DOCTYPE html>
-<html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SEYAM BIKROY - Maulvi Bazar No.1 Luxury</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-<style>
-:root{--gold:#D4AF37;--gold2:#FFD700;--bg:#060606;--card:#141414;--line:rgba(212,175,55,.2)}
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:Inter,sans-serif;background:var(--bg);color:#fff}
-h1,h2,h3{font-family:'Playfair Display',serif}
-.nav{position:sticky;top:0;z-index:99;background:rgba(0,0,0,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
-.logo{font-weight:900;color:var(--gold);font-size:19px}
-.menu a{color:#fff;text-decoration:none;font-size:12px;font-weight:700;padding:7px 12px;border:1px solid var(--line);border-radius:20px;margin-left:6px}
-.menu a:hover{background:var(--gold);color:#000}
-.hero{text-align:center;padding:36px 14px;background:radial-gradient(700px at 50% -10%,rgba(212,175,55,.35),transparent),#0d0d0d}
-.badge{background:linear-gradient(90deg,var(--gold),var(--gold2));color:#000;padding:8px 16px;border-radius:30px;font-weight:900;font-size:11px}
-.hero h1{font-size:clamp(30px,8vw,64px);background:linear-gradient(#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:12px 0}
-.sub{opacity:.8;max-width:720px;margin:0 auto;font-size:14px;line-height:1.5}
-.panel,.product{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:18px}
-main{max-width:1180px;margin:auto;padding:16px}
-input,select,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin:5px 0 12px;font:inherit}
-button{border:0;cursor:pointer;font-weight:900;border-radius:10px;padding:12px 16px}
-.primary{background:linear-gradient(90deg,var(--gold),var(--gold2));color:#000}
-.edit{background:#2563eb;color:white}.danger{background:#dc2626;color:white}.secondary{background:#e2e8f0;color:#000}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.full{grid-column:1/-1}
-.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.product{padding:0;overflow:hidden;display:flex;flex-direction:column}.product img{width:100%;height:200px;object-fit:cover;background:#222}
-.info{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}.price{color:var(--gold);font-size:22px;font-weight:900}.muted{font-size:12px;color:#8a8a8a}
-.actions{display:flex;gap:8px;margin-top:auto}.actions button{flex:1}
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center;margin-top:16px}.kpi b{font-size:20px;color:var(--gold);display:block}.kpi span{font-size:11px;opacity:.7}
-footer{text-align:center;padding:30px;border-top:1px solid var(--line);opacity:.85;font-size:13px}
-.tag{display:inline-block;background:rgba(212,175,55,.12);border:1px solid var(--line);color:var(--gold);padding:4px 10px;border-radius:20px;font-size:10px;font-weight:800;margin:2px}
-.map{width:100%;height:280px;border:0;border-radius:12px;margin-top:12px}
-</style></head><body>
-<div class="nav"><div class="logo">SEYAM BIKROY ◆ MAULVI BAZAR</div><div class="menu"><a href="#products">Shop</a><a href="#editor">Add</a><a href="#contact">Contact</a></div></div>
-<div class="hero">
-<div class="badge">MAULVI BAZAR NO.1 • 127+ CLIENTS • 4.8★ • 23 ORDERS • 127500TK • 45 FEATURES</div>
-<h1>SEYAM BIKROY</h1>
-<p class="sub">তোমার পছন্দের পণ্য, তোমার নিজের বাজার — Bkash 01603176361 • WhatsApp 01993239956 • FB fb.com/share/1Dxuf8YsZs/</p>
-<div class="kpi"><div><b>127+</b><span>CLIENTS</span></div><div><b>4.8★</b><span>RATING</span></div><div><b>23</b><span>ORDERS</span></div><div><b>127.5K</b><span>REVENUE</span></div></div>
-</div>
-<main>
-<section class="panel"><h2 style="color:var(--gold)">🔎 প্রোডাক্ট খুঁজুন</h2><input id="search" placeholder="প্রোডাক্টের নাম লিখুন..." oninput="render()"></section>
-<section class="panel" id="editor">
-<h2 id="formTitle" style="color:var(--gold)">➕ নতুন প্রোডাক্ট যোগ করুন</h2>
-<form id="productForm"><input id="pid" type="hidden"><div class="grid">
-<div><label>প্রোডাক্টের নাম *</label><input id="name" required maxlength="100"></div>
-<div><label>দাম (৳) *</label><input id="price" type="number" min="0" step="0.01" required></div>
-<div><label>স্টক / পরিমাণ *</label><input id="stock" type="number" min="0" step="1" required></div>
-<div><label>ক্যাটাগরি</label><select id="category"><option>Fashion</option><option>Electronics</option><option>Home & Living</option><option>Beauty</option><option>General</option></select></div>
-<div><label>রং (Color)</label><input id="color" placeholder="Black, Red, Blue"></div>
-<div><label>সাইজ</label><select id="size"><option>S</option><option selected>M</option><option>L</option><option>XL</option><option>All</option><option>N/A</option></select></div>
-<div class="full"><label>ছবির URL</label><input id="image" type="url" placeholder="https://... - Khali rakhle auto"></div>
-<div class="full"><label>বিবরণ</label><textarea id="description"></textarea></div>
-</div><button class="primary" type="submit" id="save">💾 Save Product</button><button class="secondary hidden" type="button" id="cancel" onclick="resetForm()">Cancel Edit</button><p id="status"></p></form>
-</section>
-<section id="productsSec"><h2 style="color:var(--gold);margin-bottom:8px">🛒 আমাদের প্রোডাক্ট</h2><p id="count" class="muted"></p><div id="products" class="products"></div></section>
-<section class="panel" id="contact"><h2 style="color:var(--gold)">📍 Contact & Order 24/7</h2><p class="muted" style="line-height:1.7">📞 WhatsApp: <b style="color:var(--gold)">01993239956</b> — <a href="https://wa.me/8801993239956" target="_blank" style="color:var(--gold)">Direct Chat</a><br>💳 Bkash/Nagad: <b style="color:var(--gold)">01603176361</b><br>📘 FB: fb.com/share/1Dxuf8YsZs/<br>📦 Order ID SEYAM-XXXX</p><iframe class="map" src="https://www.google.com/maps?q=Maulvi%20Bazar,%20Sylhet%20Bangladesh&z=14&output=embed" loading="lazy"></iframe></section>
-</main>
-<footer><b style="color:var(--gold)">SEYAM BIKROY</b> - Maulvi Bazar No.1 • Bkash 01603176361 • 01993239956 • © 2026</footer>
-<div id="aiBtn" style="position:fixed;bottom:18px;right:18px;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#000;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;z-index:9999">🤖</div>
-<div id="aiBox" style="display:none;position:fixed;bottom:88px;right:18px;width:330px;max-width:92vw;background:#111;border:1px solid var(--gold);border-radius:16px;padding:14px;z-index:9999">
-<h3 style="color:var(--gold)">SEYAM AI</h3><div id="aiChat" style="height:200px;overflow-y:auto;background:#000;border-radius:10px;padding:10px;margin:10px 0;font-size:13px"></div>
-<input id="aiInp" placeholder="price? bkash? order?" style="width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#000;color:#fff"><button onclick="aiReply()" style="width:100%;margin-top:8px;background:linear-gradient(90deg,var(--gold),var(--gold2));border:none;padding:10px;border-radius:8px;font-weight:900">Send</button></div>
-<script>
-const KEY="seyam_bikroy_products_v4";
-const starter=[{id:"d1",name:"স্টাইলিশ টি-শার্ট",price:450,stock:10,color:"Black",size:"M",category:"Fashion",description:"আরামদায়ক টি-শার্ট।",image:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600"},{id:"d2",name:"হেডফোন",price:850,stock:8,color:"Black",size:"N/A",category:"Electronics",description:"দৈনন্দিন ব্যবহারের হেডফোন।",image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600"},{id:"d3",name:"হাতঘড়ি",price:1200,stock:5,color:"Black",size:"N/A",category:"Fashion",description:"আধুনিক হাতঘড়ি।",image:"https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=600"}];
-const $=id=>document.getElementById(id);
-let items=[];try{const s=localStorage.getItem(KEY);items=s?JSON.parse(s):starter;if(!Array.isArray(items))items=starter}catch(e){items=starter}
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(items));return true}catch(e){return false}}
-function safeImage(url){try{const u=new URL(url,location.href);if(u.protocol==="https:"||u.protocol==="http:")return u.href}catch(e){}return "https://placehold.co/600x400?text=Product"}
-function render(){const q=$("search").value.trim().toLowerCase();const root=$("products");root.replaceChildren();const list=items.filter(p=>(p.name+" "+p.category+" "+p.description+" "+p.color).toLowerCase().includes(q));$("count").textContent=list.length+"টি প্রোডাক্ট";if(!list.length){root.innerHTML="<p>কোনো প্রোডাক্ট পাওয়া যায়নি।</p>";return}list.forEach(p=>{const card=document.createElement("article");card.className="product";const img=document.createElement("img");img.src=safeImage(p.image);img.alt=p.name;img.onerror=()=>{img.onerror=null;img.src="https://placehold.co/600x400?text=Product"};card.appendChild(img);const info=document.createElement("div");info.className="info";info.innerHTML=`<h3>${p.name}</h3><div class=price>৳${Number(p.price).toLocaleString("en-BD")}</div><div class=muted>ক্যাটাগরি: ${p.category||"General"}</div><div class=muted>রং: ${p.color||"N/A"} | সাইজ: ${p.size||"N/A"} | স্টক: ${p.stock}</div><p class=muted>${p.description||""}</p><span class=tag>SEYAM-XXXX</span><span class=tag>Bkash 01603176361</span>`;const actions=document.createElement("div");actions.className="actions";const buy=document.createElement("button");buy.className="primary";buy.textContent="🛒 Order";buy.onclick=()=>{let id='SEYAM-'+Math.floor(1000+Math.random()*9000);alert("Order Confirm!\nProduct: "+p.name+"\nID: "+id+"\nPrice: ৳"+p.price+"\n\nBkash 01603176361 e Send Money\nScreenshot WhatsApp 01993239956");window.open("https://wa.me/8801993239956?text=Order "+encodeURIComponent(p.name)+" ID "+id,"_blank")};const edit=document.createElement("button");edit.className="edit";edit.textContent="✏️";edit.onclick=()=>editProduct(p.id);const del=document.createElement("button");del.className="danger";del.textContent="🗑";del.onclick=()=>deleteProduct(p.id);actions.appendChild(buy);actions.appendChild(edit);actions.appendChild(del);info.appendChild(actions);card.appendChild(info);root.appendChild(card);});}
-$("productForm").addEventListener("submit",function(e){e.preventDefault();const id=$("pid").value;const old=id?items.find(p=>p.id===id):null;const product={id:id||("p"+Date.now()),name:$("name").value.trim(),price:Number($("price").value),stock:Number($("stock").value),category:$("category").value,color:$("color").value.trim(),size:$("size").value,image:$("image").value.trim()||(old?old.image:""),description:$("description").value.trim()};const prev=items;items=id?items.map(p=>p.id===id?product:p):[product,...items];if(!persist()){items=prev;return}resetForm();render();$("status").textContent="✅ Saved!";});
-function editProduct(id){const p=items.find(x=>x.id===id);if(!p)return;$("pid").value=p.id;$("name").value=p.name;$("price").value=p.price;$("stock").value=p.stock;$("category").value=p.category||"General";$("color").value=p.color||"";$("size").value=p.size||"M";$("image").value=p.image||"";$("description").value=p.description||"";$("formTitle").textContent="✏️ এডিট করুন";$("save").textContent="💾 পরিবর্তন সেভ";$("cancel").classList.remove("hidden");$("editor").scrollIntoView({behavior:"smooth"})}
-function deleteProduct(id){const p=items.find(x=>x.id===id);if(!p||!confirm('"'+p.name+'" মুছবেন?'))return;const prev=items;items=items.filter(x=>x.id!==id);if(!persist()){items=prev;return}resetForm();render()}
-function resetForm(){$("productForm").reset();$("pid").value="";$("formTitle").textContent="➕ নতুন প্রোডাক্ট যোগ করুন";$("save").textContent="💾 Save Product";$("cancel").classList.add("hidden")}
-$("aiBtn").onclick=()=>{let b=$("aiBox");b.style.display=b.style.display=='none'?'block':'none'}
-function aiReply(){let q=$("aiInp").value.toLowerCase().trim();let chat=$("aiChat");if(!q)return;chat.innerHTML+='<div><b>You:</b> '+q+'</div>';let p={"price":"Bkash 01603176361 e payment","order":"Order korle SEYAM-XXXX ID paben - WhatsApp 01993239956","bkash":"Bkash 01603176361","nagad":"Nagad 01603176361","whatsapp":"WhatsApp 01993239956","location":"Maulvi Bazar Sylhet - Map Contact e","map":"Contact e Google Map","hi":"Assalamu Alaikum! Seyam Bikroy welcome!"};let ans="Seyam Bikroy - price order bkash likhun - 01993239956";for(let k in p){if(q.includes(k)){ans=p[k];break}}chat.innerHTML+='<div style="color:#D4AF37;margin:6px 0"><b>AI:</b> '+ans+'</div>';$("aiInp").value='';chat.scrollTop=chat.scrollHeight}
-render();
-</script></body></html>
+
+-- SEYAM BIKROY database setup
+
+create table if not exists public.admin_users (
+  user_id uuid primary key references auth.users(id) on delete cascade
+);
+
+create table if not exists public.products (
+  id uuid primary key default gen_random_uuid(),
+  name text,
+  price numeric(12,2),
+  emoji text default '📦',
+  image_url text,
+  description text,
+  created_at timestamptz default now()
+);
+
+alter table public.products add column if not exists name text;
+alter table public.products add column if not exists price numeric(12,2);
+alter table public.products add column if not exists emoji text default '📦';
+alter table public.products add column if not exists image_url text;
+alter table public.products add column if not exists description text;
+alter table public.products add column if not exists created_at timestamptz default now();
+
+create table if not exists public.orders (
+  id uuid primary key default gen_random_uuid(),
+  customer_name text,
+  phone text,
+  address text,
+  product_name text,
+  product_price numeric(12,2),
+  status text default 'Pending',
+  created_at timestamptz default now()
+);
+
+alter table public.orders add column if not exists customer_name text;
+alter table public.orders add column if not exists phone text;
+alter table public.orders add column if not exists address text;
+alter table public.orders add column if not exists product_name text;
+alter table public.orders add column if not exists product_price numeric(12,2);
+alter table public.orders add column if not exists status text default 'Pending';
+alter table public.orders add column if not exists created_at timestamptz default now();
+
+-- Check whether the current user is an authorized admin.
+create or replace function public.is_seyam_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.admin_users
+    where user_id = (select auth.uid())
+  );
+$$;
+
+alter table public.admin_users enable row level security;
+alter table public.products enable row level security;
+alter table public.orders enable row level security;
+
+drop policy if exists "Admin reads own admin record"
+on public.admin_users;
+create policy "Admin reads own admin record"
+on public.admin_users for select to authenticated
+using (user_id = (select auth.uid()));
+
+drop policy if exists "Public reads products"
+on public.products;
+create policy "Public reads products"
+on public.products for select to anon, authenticated
+using (true);
+
+drop policy if exists "Admin adds products"
+on public.products;
+create policy "Admin adds products"
+on public.products for insert to authenticated
+with check ((select public.is_seyam_admin()));
+
+drop policy if exists "Admin edits products"
+on public.products;
+create policy "Admin edits products"
+on public.products for update to authenticated
+using ((select public.is_seyam_admin()))
+with check ((select public.is_seyam_admin()));
+
+drop policy if exists "Admin deletes products"
+on public.products;
+create policy "Admin deletes products"
+on public.products for delete to authenticated
+using ((select public.is_seyam_admin()));
+
+drop policy if exists "Customers submit orders"
+on public.orders;
+create policy "Customers submit orders"
+on public.orders for insert to anon, authenticated
+with check (
+  customer_name is not null
+  and phone is not null
+  and address is not null
+  and product_name is not null
+  and product_price > 0
+);
+
+drop policy if exists "Admin reads orders"
+on public.orders;
+create policy "Admin reads orders"
+on public.orders for select to authenticated
+using ((select public.is_seyam_admin()));
+
+drop policy if exists "Admin updates orders"
+on public.orders;
+create policy "Admin updates orders"
+on public.orders for update to authenticated
+using ((select public.is_seyam_admin()))
+with check ((select public.is_seyam_admin()));
