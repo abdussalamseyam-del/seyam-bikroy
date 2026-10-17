@@ -2,403 +2,349 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SEYAM BIKROY</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#172033}
-    header{background:#087f5b;color:white;padding:22px 15px;text-align:center}
-    header h1{margin:0;font-size:29px}
-    header p{margin:8px 0 0}
-    nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;background:white;padding:12px}
-    button{border:0;border-radius:8px;padding:11px 15px;cursor:pointer;font-weight:bold;background:#087f5b;color:white}
-    button.secondary{background:#334155}
-    button.danger{background:#b42318}
-    main{max-width:1050px;margin:auto;padding:18px}
-    .panel{background:white;padding:18px;border-radius:12px;margin:18px 0;box-shadow:0 2px 10px #0000000b}
-    .products{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px}
-    .product{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px #00000012}
-    .product img{width:100%;height:175px;object-fit:cover;background:#e2e8f0}
-    .product .inside{padding:14px}
-    .emoji{font-size:55px;text-align:center;padding:25px;background:#e8f7ef}
-    .price{color:#087f5b;font-size:21px;font-weight:bold}
-    input,textarea,select{width:100%;padding:12px;margin:7px 0 14px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}
-    label{font-weight:bold}
-    h2{margin-top:0}
-    .hidden{display:none}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .row>*{flex:1}
-    .order-item{border-bottom:1px solid #e2e8f0;padding:14px 0}
-    .msg{padding:10px;border-radius:8px;margin:10px 0;overflow-wrap:anywhere}
-    footer{text-align:center;background:#172033;color:white;padding:20px}
-    .small{color:#64748b;font-size:14px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEYAM BIKROY</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7f6;color:#172033}
+header{background:#087f5b;color:white;text-align:center;padding:24px 12px}
+header h1{margin:0;font-size:30px}
+nav{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;background:white;padding:12px}
+button{border:0;border-radius:8px;padding:12px 16px;background:#087f5b;color:white;font-weight:bold;cursor:pointer;margin:4px}
+button:disabled{opacity:.6}
+main{max-width:1100px;margin:auto;padding:16px}
+.panel{background:white;padding:18px;border-radius:12px;margin:18px 0}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.product{background:white;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px #0002}
+.product img,.no-image{width:100%;height:190px;object-fit:contain;background:#fff}
+.no-image{display:flex;align-items:center;justify-content:center;background:#e2e8f0;color:#64748b}
+.inside{padding:14px}
+.price{font-size:22px;font-weight:bold;color:#087f5b}
+input,textarea,select{width:100%;padding:12px;margin:8px 0 14px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}
+label{font-weight:bold}
+.hidden{display:none}
+.msg{padding:12px;border-radius:8px;margin:10px 0;overflow-wrap:anywhere}
+.order-item{border-bottom:1px solid #ddd;padding:14px 0}
+footer{text-align:center;background:#172033;color:white;padding:20px;margin-top:25px}
+</style>
 </head>
 <body>
+
 <header>
-  <h1>🛍️ SEYAM BIKROY</h1>
-  <p>আপনার পছন্দের পণ্য, সহজে অর্ডার করুন</p>
+<h1>SEYAM BIKROY</h1>
+<p>আপনার পছন্দের পণ্য, সহজে অর্ডার করুন</p>
 </header>
 
 <nav>
-  <button onclick="showSection('shop')">হোম / পণ্য</button>
-  <button onclick="showSection('order')">অর্ডার করুন</button>
-  <button onclick="showSection('login')">Admin Login</button>
+<button onclick="showSection('shop')">হোম / পণ্য</button>
+<button onclick="showSection('order')">অর্ডার করুন</button>
+<button onclick="showSection('login')">Admin Login</button>
 </nav>
 
 <main>
-  <section id="shop">
-    <h2>আমাদের পণ্য</h2>
-    <div id="notice" class="msg hidden"></div>
-    <div id="products" class="products">পণ্য লোড হচ্ছে...</div>
-  </section>
+<section id="shop">
+<h2>আমাদের পণ্য</h2>
+<div id="products">পণ্য লোড হচ্ছে...</div>
+</section>
 
-  <section id="order" class="panel hidden">
-    <h2>📦 পণ্য অর্ডার করুন</h2>
-    <form id="orderForm">
-      <label>পণ্য বাছাই করুন</label>
-      <select id="orderProduct" required></select>
-      <label>আপনার নাম</label>
-      <input id="customerName" required maxlength="100" placeholder="আপনার নাম">
-      <label>মোবাইল নম্বর</label>
-      <input id="customerPhone" required maxlength="30" placeholder="01XXXXXXXXX">
-      <label>সম্পূর্ণ ঠিকানা</label>
-      <textarea id="customerAddress" required maxlength="1000" placeholder="আপনার ঠিকানা"></textarea>
-      <button type="submit">অর্ডার নিশ্চিত করুন</button>
-      <div id="orderMessage" class="msg hidden"></div>
-    </form>
-  </section>
+<section id="order" class="panel hidden">
+<h2>পণ্য অর্ডার করুন</h2>
+<form id="orderForm">
+<label>পণ্য নির্বাচন করুন</label>
+<select id="orderProduct" required></select>
+<label>আপনার নাম</label>
+<input id="customerName" required maxlength="100" placeholder="আপনার নাম">
+<label>মোবাইল নম্বর</label>
+<input id="customerPhone" required maxlength="30" placeholder="01XXXXXXXXX">
+<label>সম্পূর্ণ ঠিকানা</label>
+<textarea id="customerAddress" required maxlength="1000" placeholder="আপনার ঠিকানা"></textarea>
+<button type="submit">অর্ডার নিশ্চিত করুন</button>
+<div id="orderMessage" class="msg hidden"></div>
+</form>
+</section>
 
-  <section id="login" class="panel hidden">
-    <h2>🔐 Admin Login</h2>
-    <form id="loginForm">
-      <label>Admin Email</label>
-      <input id="adminEmail" type="email" required autocomplete="username">
-      <label>Password</label>
-      <input id="adminPassword" type="password" required autocomplete="current-password">
-      <button type="submit">Login</button>
-    </form>
-    <div id="loginMessage" class="msg hidden"></div>
-  </section>
+<section id="login" class="panel hidden">
+<h2>Admin Login</h2>
+<form id="loginForm">
+<label>Admin Email</label>
+<input id="adminEmail" type="email" required>
+<label>Password</label>
+<input id="adminPassword" type="password" required>
+<button type="submit">Login</button>
+</form>
+<div id="loginMessage" class="msg hidden"></div>
+</section>
 
-  <section id="dashboard" class="hidden">
-    <div class="panel">
-      <div class="row">
-        <h2>⚙️ Admin Dashboard</h2>
-        <button class="secondary" onclick="logout()">Logout</button>
-      </div>
-      <p>এখান থেকে পণ্য যোগ ও অর্ডারের অবস্থা পরিবর্তন করতে পারবেন।</p>
-    </div>
+<section id="dashboard" class="hidden">
+<div class="panel">
+<h2>Admin Dashboard</h2>
+<button onclick="logout()">Logout</button>
+</div>
 
-    <div class="panel">
-      <h2>➕ নতুন পণ্য যোগ করুন</h2>
-      <form id="productForm">
-        <label>পণ্যের নাম</label>
-        <input id="productName" required maxlength="150">
-        <div class="row">
-          <div>
-            <label>দাম (টাকা)</label>
-            <input id="productPrice" type="number" min="1" step="0.01" required>
-          </div>
-          <div>
-            <label>ইমোজি</label>
-            <input id="productEmoji" value="🛍️" maxlength="20">
-          </div>
-        </div>
-        <label>ছবির URL (ঐচ্ছিক)</label>
-        <input id="productImage" type="url" placeholder="https://example.com/image.jpg">
-        <label>বিস্তারিত (ঐচ্ছিক)</label>
-        <textarea id="productDescription" maxlength="2000"></textarea>
-        <button type="submit">পণ্য যোগ করুন</button>
-        <div id="productMessage" class="msg hidden"></div>
-      </form>
-    </div>
+<div class="panel">
+<h2>নতুন পণ্য যোগ করুন</h2>
+<form id="productForm">
+<label>পণ্যের নাম</label>
+<input id="productName" required maxlength="150">
+<label>দাম (টাকা)</label>
+<input id="productPrice" type="number" min="1" step="0.01" required>
+<label>পণ্যের ছবির URL</label>
+<input id="productImage" type="url" required placeholder="https://example.com/image.jpg">
+<label>বিস্তারিত</label>
+<textarea id="productDescription" maxlength="2000"></textarea>
+<button type="submit">পণ্য যোগ করুন</button>
+<div id="productMessage" class="msg hidden"></div>
+</form>
+</div>
 
-    <div class="panel">
-      <h2>📋 কাস্টমার অর্ডার</h2>
-      <button onclick="loadOrders()">অর্ডার রিফ্রেশ</button>
-      <div id="ordersList">অর্ডার লোড হয়নি।</div>
-    </div>
-  </section>
+<div class="panel">
+<h2>কাস্টমার অর্ডার</h2>
+<button onclick="loadOrders()">অর্ডার রিফ্রেশ</button>
+<div id="ordersList">অর্ডার লোড হয়নি।</div>
+</div>
+</section>
 </main>
 
 <footer>© SEYAM BIKROY</footer>
 
 <script>
-const SUPABASE_URL = "https://wosuswgqbgsdfvhpbxbu.supabase.co";
-const SUPABASE_KEY = "sb_publishable_SiIh7YPZF6vpiJzWkYyTFA_GBN7umH1";
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_URL="https://wosuswgqbgsdfvhpbxbu.supabase.co";
+const SUPABASE_KEY="sb_publishable_SiIh7YPZF6vpiJzWkYyTFA_GBN7umH1";
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let productsCache = [];
-let isAdmin = false;
+let productsCache=[];
+let isAdmin=false;
 
-function safe(value) {
-  return String(value ?? "").replace(/[&<>"']/g, c => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;",
-    '"':"&quot;", "'":"&#39;"
-  })[c]);
+function showSection(id){
+["shop","order","login","dashboard"].forEach(x=>
+document.getElementById(x).classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+if(id==="dashboard"&&isAdmin)loadOrders();
 }
 
-function message(id, text, error = false) {
-  const el = document.getElementById(id);
-  el.textContent = text;
-  el.classList.remove("hidden");
-  el.style.background = error ? "#fee2e2" : "#dcfce7";
-  el.style.color = error ? "#991b1b" : "#166534";
+function msg(id,text,error=false){
+const e=document.getElementById(id);
+e.textContent=text;
+e.classList.remove("hidden");
+e.style.background=error?"#fee2e2":"#dcfce7";
+e.style.color=error?"#991b1b":"#166534";
 }
 
-function showSection(id) {
-  ["shop","order","login","dashboard"].forEach(name =>
-    document.getElementById(name).classList.add("hidden")
-  );
-  document.getElementById(id).classList.remove("hidden");
-  if (id === "dashboard" && isAdmin) loadOrders();
+function taka(n){return "৳"+Number(n).toLocaleString("bn-BD")}
+
+function noImage(){
+const d=document.createElement("div");
+d.className="no-image";
+d.textContent="ছবি পাওয়া যায়নি";
+return d;
 }
 
-function taka(value) {
-  return "৳" + Number(value).toLocaleString("bn-BD");
+async function loadProducts(){
+const area=document.getElementById("products");
+area.textContent="পণ্য লোড হচ্ছে...";
+
+const {data,error}=await db.from("products")
+.select("id,name,price,image_url,description")
+.order("created_at",{ascending:false});
+
+if(error){
+area.textContent="পণ্য লোড হয়নি: "+error.message;
+return;
 }
 
-async function loadProducts() {
-  const area = document.getElementById("products");
-  area.textContent = "পণ্য লোড হচ্ছে...";
+productsCache=data||[];
+area.replaceChildren();
+const select=document.getElementById("orderProduct");
+select.replaceChildren();
+select.add(new Option("পণ্য নির্বাচন করুন",""));
 
-  const { data, error } = await db.from("products")
-    .select("id,name,price,emoji,image_url,description")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    area.textContent = "পণ্য লোড হয়নি: " + error.message;
-    return;
-  }
-
-  productsCache = data || [];
-  area.replaceChildren();
-
-  const select = document.getElementById("orderProduct");
-  select.replaceChildren();
-
-  if (!productsCache.length) {
-    area.textContent = "এখনো কোনো পণ্য যোগ করা হয়নি।";
-    select.add(new Option("আগে পণ্য যোগ করতে হবে", ""));
-    return;
-  }
-
-  productsCache.forEach(p => {
-    const option = new Option(`${p.name} — ${taka(p.price)}`, p.id);
-    select.add(option);
-
-    const card = document.createElement("article");
-    card.className = "product";
-
-    if (p.image_url) {
-      const img = document.createElement("img");
-      img.src = p.image_url;
-      img.alt = p.name;
-      img.loading = "lazy";
-      img.onerror = () => {
-        img.replaceWith(Object.assign(document.createElement("div"), {
-          className: "emoji", textContent: p.emoji || "🛍️"
-        }));
-      };
-      card.appendChild(img);
-    } else {
-      const emoji = document.createElement("div");
-      emoji.className = "emoji";
-      emoji.textContent = p.emoji || "🛍️";
-      card.appendChild(emoji);
-    }
-
-    const inside = document.createElement("div");
-    inside.className = "inside";
-    inside.innerHTML =
-      `<h3>${safe(p.name)}</h3>
-       <div class="price">${taka(p.price)}</div>
-       <p>${safe(p.description || "")}</p>`;
-
-    const btn = document.createElement("button");
-    btn.textContent = "অর্ডার করুন";
-    btn.onclick = () => {
-      select.value = p.id;
-      showSection("order");
-    };
-    inside.appendChild(btn);
-    card.appendChild(inside);
-    area.appendChild(card);
-  });
+if(!productsCache.length){
+area.textContent="এখনো কোনো পণ্য যোগ করা হয়নি।";
+select.add(new Option("কোনো পণ্য নেই",""));
+return;
 }
 
-document.getElementById("orderForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const p = productsCache.find(x =>
-    x.id === document.getElementById("orderProduct").value
-  );
+const grid=document.createElement("div");
+grid.className="products";
 
-  if (!p) {
-    message("orderMessage", "আগে একটি পণ্য নির্বাচন করুন।", true);
-    return;
-  }
+productsCache.forEach(p=>{
+select.add(new Option(p.name+" — "+taka(p.price),p.id));
 
-  const btn = e.submitter;
-  btn.disabled = true;
+const card=document.createElement("article");
+card.className="product";
 
-  const { error } = await db.from("orders").insert({
-    customer_name: document.getElementById("customerName").value.trim(),
-    phone: document.getElementById("customerPhone").value.trim(),
-    address: document.getElementById("customerAddress").value.trim(),
-    product_name: p.name,
-    product_price: Number(p.price),
-    status: "Pending"
-  });
+if(p.image_url){
+const img=document.createElement("img");
+img.src=p.image_url;
+img.alt=p.name;
+img.loading="lazy";
+img.onerror=()=>img.replaceWith(noImage());
+card.appendChild(img);
+}else{
+card.appendChild(noImage());
+}
 
-  btn.disabled = false;
+const inside=document.createElement("div");
+inside.className="inside";
 
-  if (error) {
-    message("orderMessage", "অর্ডার হয়নি: " + error.message, true);
-  } else {
-    message("orderMessage", "অর্ডার সফল হয়েছে! ধন্যবাদ।");
-    e.target.reset();
-  }
+const name=document.createElement("h3");
+name.textContent=p.name;
+
+const price=document.createElement("div");
+price.className="price";
+price.textContent=taka(p.price);
+
+const desc=document.createElement("p");
+desc.textContent=p.description||"";
+
+const btn=document.createElement("button");
+btn.textContent="অর্ডার করুন";
+btn.onclick=()=>{
+select.value=p.id;
+showSection("order");
+};
+
+inside.append(name,price,desc,btn);
+card.appendChild(inside);
+grid.appendChild(card);
+});
+area.appendChild(grid);
+}
+
+document.getElementById("orderForm").addEventListener("submit",async e=>{
+e.preventDefault();
+const p=productsCache.find(x=>x.id===document.getElementById("orderProduct").value);
+if(!p){msg("orderMessage","আগে একটি পণ্য নির্বাচন করুন।",true);return}
+
+const btn=e.submitter;
+btn.disabled=true;
+try{
+const {error}=await db.from("orders").insert({
+customer_name:document.getElementById("customerName").value.trim(),
+phone:document.getElementById("customerPhone").value.trim(),
+address:document.getElementById("customerAddress").value.trim(),
+product_name:p.name,
+product_price:Number(p.price),
+status:"Pending"
+});
+if(error)msg("orderMessage","অর্ডার হয়নি: "+error.message,true);
+else{
+msg("orderMessage","অর্ডার সফল হয়েছে! ধন্যবাদ।");
+e.target.reset();
+}
+}catch(err){msg("orderMessage","সমস্যা: "+err.message,true)}
+finally{btn.disabled=false}
 });
 
-document.getElementById("loginForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  const btn = e.submitter;
-  btn.disabled = true;
+document.getElementById("loginForm").addEventListener("submit",async e=>{
+e.preventDefault();
+const btn=e.submitter;
+btn.disabled=true;
+try{
+const {error}=await db.auth.signInWithPassword({
+email:document.getElementById("adminEmail").value.trim(),
+password:document.getElementById("adminPassword").value
+});
+if(error){msg("loginMessage","Login হয়নি: "+error.message,true);return}
 
-  const email = document.getElementById("adminEmail").value.trim();
-  const password = document.getElementById("adminPassword").value;
-
-  const { data, error } = await db.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    btn.disabled = false;
-    message("loginMessage", "Login হয়নি: " + error.message, true);
-    return;
-  }
-
-  const { data: admin, error: adminError } =
-    await db.rpc("is_seyam_admin");
-
-  if (adminError || admin !== true) {
-    await db.auth.signOut();
-    btn.disabled = false;
-    message("loginMessage", "এই অ্যাকাউন্ট Admin নয় অথবা Admin যাচাই ব্যর্থ হয়েছে।", true);
-    return;
-  }
-
-  isAdmin = true;
-  btn.disabled = false;
-  document.getElementById("loginForm").reset();
-  showSection("dashboard");
-  await loadOrders();
+const {data,error:adminError}=await db.rpc("is_seyam_admin");
+if(adminError||data!==true){
+await db.auth.signOut();
+msg("loginMessage","এই অ্যাকাউন্ট Admin নয় অথবা যাচাই ব্যর্থ হয়েছে।",true);
+return
+}
+isAdmin=true;
+e.target.reset();
+showSection("dashboard");
+await loadOrders();
+}catch(err){msg("loginMessage","সমস্যা: "+err.message,true)}
+finally{btn.disabled=false}
 });
 
-async function loadOrders() {
-  if (!isAdmin) return;
-  const area = document.getElementById("ordersList");
-  area.textContent = "অর্ডার লোড হচ্ছে...";
+async function loadOrders(){
+if(!isAdmin)return;
+const area=document.getElementById("ordersList");
+area.textContent="অর্ডার লোড হচ্ছে...";
 
-  const { data, error } = await db.from("orders")
-    .select("id,customer_name,phone,address,product_name,product_price,status,created_at")
-    .order("created_at", { ascending: false });
+const {data,error}=await db.from("orders")
+.select("id,customer_name,phone,address,product_name,product_price,status,created_at")
+.order("created_at",{ascending:false});
 
-  if (error) {
-    area.textContent = "অর্ডার লোড হয়নি: " + error.message;
-    return;
-  }
+if(error){area.textContent="অর্ডার লোড হয়নি: "+error.message;return}
+area.replaceChildren();
+if(!data||!data.length){area.textContent="এখনো কোনো অর্ডার নেই।";return}
 
-  area.replaceChildren();
+data.forEach(o=>{
+const item=document.createElement("div");
+item.className="order-item";
+const details=document.createElement("div");
+details.textContent=
+"পণ্য: "+o.product_name+" ("+taka(o.product_price)+")"+
+" | কাস্টমার: "+o.customer_name+
+" | ফোন: "+o.phone+
+" | ঠিকানা: "+o.address+
+" | তারিখ: "+(o.created_at||"");
 
-  if (!data || !data.length) {
-    area.textContent = "এখনো কোনো অর্ডার নেই।";
-    return;
-  }
+const select=document.createElement("select");
+["Pending","Processing","Delivered","Cancelled"].forEach(s=>select.add(new Option(s,s)));
+select.value=o.status||"Pending";
 
-  data.forEach(o => {
-    const item = document.createElement("div");
-    item.className = "order-item";
-    const details = document.createElement("div");
-    details.innerHTML =
-      `<b>অর্ডার:</b> ${safe(o.product_name)} (${taka(o.product_price)})<br>
-       <b>কাস্টমার:</b> ${safe(o.customer_name)}<br>
-       <b>ফোন:</b> ${safe(o.phone)}<br>
-       <b>ঠিকানা:</b> ${safe(o.address)}<br>
-       <b>তারিখ:</b> ${safe(o.created_at || "")}`;
-    item.appendChild(details);
-
-    const select = document.createElement("select");
-    ["Pending","Processing","Delivered","Cancelled"].forEach(s =>
-      select.add(new Option(s, s))
-    );
-    select.value = o.status || "Pending";
-
-    const btn = document.createElement("button");
-    btn.textContent = "স্ট্যাটাস সেভ";
-    btn.onclick = async () => {
-      btn.disabled = true;
-      const { error } = await db.from("orders")
-        .update({ status: select.value }).eq("id", o.id);
-      btn.disabled = false;
-      if (error) alert("সেভ হয়নি: " + error.message);
-      else alert("অর্ডারের স্ট্যাটাস আপডেট হয়েছে।");
-    };
-
-    item.appendChild(document.createElement("br"));
-    item.appendChild(select);
-    item.appendChild(btn);
-    area.appendChild(item);
-  });
+const btn=document.createElement("button");
+btn.textContent="স্ট্যাটাস সেভ";
+btn.onclick=async()=>{
+btn.disabled=true;
+const {error}=await db.from("orders").update({status:select.value}).eq("id",o.id);
+btn.disabled=false;
+if(error)alert("সেভ হয়নি: "+error.message);
+else alert("স্ট্যাটাস আপডেট হয়েছে।");
+};
+item.append(details,select,btn);
+area.appendChild(item);
+});
 }
 
-document.getElementById("productForm").addEventListener("submit", async e => {
-  e.preventDefault();
-  if (!isAdmin) return;
+document.getElementById("productForm").addEventListener("submit",async e=>{
+e.preventDefault();
+if(!isAdmin)return;
+const btn=e.submitter;
+btn.disabled=true;
 
-  const btn = e.submitter;
-  btn.disabled = true;
+try{
+const price=Number(document.getElementById("productPrice").value);
+const imageUrl=document.getElementById("productImage").value.trim();
 
-  const price = Number(document.getElementById("productPrice").value);
-  if (!Number.isFinite(price) || price <= 0) {
-    btn.disabled = false;
-    message("productMessage", "সঠিক দাম লিখুন।", true);
-    return;
-  }
-
-  const { error } = await db.from("products").insert({
-    name: document.getElementById("productName").value.trim(),
-    price,
-    emoji: document.getElementById("productEmoji").value.trim() || "🛍️",
-    image_url: document.getElementById("productImage").value.trim() || null,
-    description: document.getElementById("productDescription").value.trim()
-  });
-
-  btn.disabled = false;
-
-  if (error) {
-    message("productMessage", "পণ্য যোগ হয়নি: " + error.message, true);
-  } else {
-    message("productMessage", "পণ্য সফলভাবে যোগ হয়েছে!");
-    e.target.reset();
-    document.getElementById("productEmoji").value = "🛍️";
-    await loadProducts();
-  }
-});
-
-async function logout() {
-  await db.auth.signOut();
-  isAdmin = false;
-  showSection("shop");
+if(!Number.isFinite(price)||price<=0){
+msg("productMessage","সঠিক দাম লিখুন।",true);
+return;
 }
 
-db.auth.onAuthStateChange(() => {
-  // Admin access is checked explicitly when logging in.
+const {error}=await db.from("products").insert({
+name:document.getElementById("productName").value.trim(),
+price,
+image_url:imageUrl,
+description:document.getElementById("productDescription").value.trim()
 });
+
+if(error)msg("productMessage","পণ্য যোগ হয়নি: "+error.message,true);
+else{
+msg("productMessage","পণ্য সফলভাবে যোগ হয়েছে!");
+e.target.reset();
+await loadProducts();
+}
+}catch(err){msg("productMessage","সমস্যা: "+err.message,true)}
+finally{btn.disabled=false}
+});
+
+async function logout(){
+await db.auth.signOut();
+isAdmin=false;
+showSection("shop");
+}
 
 loadProducts();
 </script>
 </body>
   </html>
-          
+  
