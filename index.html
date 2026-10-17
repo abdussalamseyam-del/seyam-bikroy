@@ -1,1 +1,215 @@
 
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEYAM BIKROY</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6f8;color:#172033}
+header{background:#087b55;color:white;text-align:center;padding:24px 12px}
+header h1{margin:0 0 8px}
+main{max-width:1100px;margin:auto;padding:16px}
+.panel,.product{background:white;border-radius:12px;padding:16px;margin-bottom:18px;box-shadow:0 2px 8px #0001}
+input,select,textarea,button{font:inherit;padding:11px;border-radius:7px}
+input,select,textarea{width:100%;border:1px solid #cbd5e1;margin:5px 0 12px}
+textarea{min-height:80px}
+button{border:0;cursor:pointer;font-weight:bold}
+.primary{background:#087b55;color:white}
+.edit{background:#2563eb;color:white}
+.danger{background:#dc2626;color:white}
+.secondary{background:#e2e8f0}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.full{grid-column:1/-1}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.product{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.product img{width:100%;height:190px;object-fit:cover;background:#e2e8f0}
+.info{padding:14px;display:flex;flex-direction:column;gap:9px;flex:1}
+.price{color:#087b55;font-size:21px;font-weight:bold}
+.muted{font-size:13px;color:#64748b}
+.actions{display:flex;gap:8px;margin-top:auto}
+.actions button{flex:1}
+.hidden{display:none}
+#status{color:#087b55}
+footer{text-align:center;padding:20px;color:#64748b}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<header>
+<h1>🛍️ SEYAM BIKROY</h1>
+<p>তোমার পছন্দের পণ্য, তোমার নিজের বাজার</p>
+</header>
+<main>
+<section class="panel">
+<h2>🔎 প্রোডাক্ট খুঁজুন</h2>
+<input id="search" placeholder="প্রোডাক্টের নাম লিখুন..." oninput="render()">
+</section>
+
+<section class="panel" id="editor">
+<h2 id="formTitle">➕ নতুন প্রোডাক্ট যোগ করুন</h2>
+<form id="productForm">
+<input id="pid" type="hidden">
+<div class="grid">
+<div><label>প্রোডাক্টের নাম *</label><input id="name" required maxlength="100"></div>
+<div><label>দাম (৳) *</label><input id="price" type="number" min="0" step="0.01" required></div>
+<div><label>স্টক / পরিমাণ *</label><input id="stock" type="number" min="0" step="1" required></div>
+<div><label>ক্যাটাগরি</label>
+<select id="category"><option>Fashion</option><option>Electronics</option><option>Home & Living</option><option>Beauty</option><option>General</option></select></div>
+<div><label>রং (Color)</label><input id="color" placeholder="Black, Red, Blue"></div>
+<div><label>সাইজ</label>
+<select id="size"><option>S</option><option selected>M</option><option>L</option><option>XL</option><option>All</option><option>N/A</option></select></div>
+<div class="full"><label>ছবির URL</label><input id="image" type="url" placeholder="https://example.com/photo.jpg"></div>
+<div class="full"><label>বিবরণ</label><textarea id="description"></textarea></div>
+</div>
+<button class="primary" type="submit" id="save">💾 Save Product</button>
+<button class="secondary hidden" type="button" id="cancel" onclick="resetForm()">Cancel Edit</button>
+<p id="status" role="status"></p>
+</form>
+</section>
+
+<section>
+<h2>🛒 আমাদের প্রোডাক্ট</h2>
+<p id="count" class="muted"></p>
+<div id="products" class="products"></div>
+</section>
+</main>
+<footer>© <span id="year"></span> SEYAM BIKROY</footer>
+
+<script>
+const KEY="seyam_bikroy_products_v4";
+const starter=[
+{id:"d1",name:"স্টাইলিশ টি-শার্ট",price:450,stock:10,color:"Black",size:"M",category:"Fashion",description:"আরামদায়ক টি-শার্ট।",image:"https://placehold.co/600x400?text=T-Shirt"},
+{id:"d2",name:"হেডফোন",price:850,stock:8,color:"Black",size:"N/A",category:"Electronics",description:"দৈনন্দিন ব্যবহারের হেডফোন।",image:"https://placehold.co/600x400?text=Headphones"},
+{id:"d3",name:"হাতঘড়ি",price:1200,stock:5,color:"Black",size:"N/A",category:"Fashion",description:"আধুনিক হাতঘড়ি।",image:"https://placehold.co/600x400?text=Watch"}
+];
+const $=id=>document.getElementById(id);
+$("year").textContent=new Date().getFullYear();
+let items=[];
+try{
+ const saved=localStorage.getItem(KEY);
+ items=saved?JSON.parse(saved):starter;
+ if(!Array.isArray(items))items=starter;
+}catch(e){items=starter}
+
+function persist(){
+ try{localStorage.setItem(KEY,JSON.stringify(items));return true}
+ catch(e){alert("সেভ করা যায়নি। ব্রাউজারের Storage পরীক্ষা করুন।");return false}
+}
+function safeImage(url){
+ try{
+  const u=new URL(url,location.href);
+  if(u.protocol==="https:"||u.protocol==="http:")return u.href;
+ }catch(e){}
+ return "https://placehold.co/600x400?text=Product";
+}
+function addText(parent,tag,text,cls){
+ const n=document.createElement(tag);
+ n.textContent=text;
+ if(cls)n.className=cls;
+ parent.appendChild(n);
+ return n;
+}
+function render(){
+ const q=$("search").value.trim().toLowerCase();
+ const root=$("products");
+ root.replaceChildren();
+ const list=items.filter(p=>
+ (p.name+" "+p.category+" "+p.description+" "+p.color).toLowerCase().includes(q));
+ $("count").textContent=list.length+"টি প্রোডাক্ট";
+ if(!list.length){addText(root,"p","কোনো প্রোডাক্ট পাওয়া যায়নি।");return}
+ list.forEach(p=>{
+  const card=document.createElement("article");
+  card.className="product";
+  const img=document.createElement("img");
+  img.src=safeImage(p.image||"");
+  img.alt=p.name;
+  img.onerror=()=>{img.onerror=null;img.src="https://placehold.co/600x400?text=Product"};
+  card.appendChild(img);
+  const info=document.createElement("div");
+  info.className="info";
+  addText(info,"h3",p.name);
+  addText(info,"div","৳"+Number(p.price).toLocaleString("en-BD"),"price");
+  addText(info,"div","ক্যাটাগরি: "+(p.category||"General"),"muted");
+  addText(info,"div","রং: "+(p.color||"নির্দিষ্ট নয়")+" | সাইজ: "+(p.size||"N/A"),"muted");
+  addText(info,"div","স্টক: "+p.stock,"muted");
+  addText(info,"p",p.description||"বিবরণ নেই");
+  const actions=document.createElement("div");
+  actions.className="actions";
+  const edit=document.createElement("button");
+  edit.className="edit";edit.textContent="✏️ Edit";
+  edit.onclick=()=>editProduct(p.id);
+  actions.appendChild(edit);
+  const del=document.createElement("button");
+  del.className="danger";del.textContent="🗑 Delete";
+  del.onclick=()=>deleteProduct(p.id);
+  actions.appendChild(del);
+  info.appendChild(actions);
+  card.appendChild(info);
+  root.appendChild(card);
+ });
+}
+$("productForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ const id=$("pid").value;
+ const old=id?items.find(p=>p.id===id):null;
+ const product={
+  id:id||("p"+Date.now()+Math.random().toString(36).slice(2,7)),
+  name:$("name").value.trim(),
+  price:Number($("price").value),
+  stock:Number($("stock").value),
+  category:$("category").value,
+  color:$("color").value.trim(),
+  size:$("size").value,
+  image:$("image").value.trim()||(old?old.image:"https://placehold.co/600x400?text=Product"),
+  description:$("description").value.trim()
+ };
+ if(!product.name||!Number.isFinite(product.price)||product.price<0||!Number.isInteger(product.stock)||product.stock<0){
+  $("status").textContent="সঠিক নাম, দাম ও স্টক লিখুন।";return;
+ }
+ const previous=items;
+ items=id?items.map(p=>p.id===id?product:p):[product,...items];
+ if(!persist()){items=previous;return}
+ resetForm();
+ render();
+ $("status").textContent="প্রোডাক্ট সেভ হয়েছে।";
+});
+function editProduct(id){
+ const p=items.find(x=>x.id===id);
+ if(!p)return;
+ $("pid").value=p.id;
+ $("name").value=p.name;
+ $("price").value=p.price;
+ $("stock").value=p.stock;
+ $("category").value=p.category||"General";
+ $("color").value=p.color||"";
+ $("size").value=p.size||"M";
+ $("image").value=p.image||"";
+ $("description").value=p.description||"";
+ $("formTitle").textContent="✏️ প্রোডাক্ট এডিট করুন";
+ $("save").textContent="💾 পরিবর্তন সেভ করুন";
+ $("cancel").classList.remove("hidden");
+ $("editor").scrollIntoView({behavior:"smooth"});
+}
+function deleteProduct(id){
+ const p=items.find(x=>x.id===id);
+ if(!p||!confirm('"'+p.name+'" মুছে ফেলবেন?'))return;
+ const previous=items;
+ items=items.filter(x=>x.id!==id);
+ if(!persist()){items=previous;return}
+ resetForm();
+ render();
+}
+function resetForm(){
+ $("productForm").reset();
+ $("pid").value="";
+ $("formTitle").textContent="➕ নতুন প্রোডাক্ট যোগ করুন";
+ $("save").textContent="💾 Save Product";
+ $("cancel").classList.add("hidden");
+}
+render();
+</script>
+</body>
+  </html>
+  
