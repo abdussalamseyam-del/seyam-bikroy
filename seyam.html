@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEYAM BIKROY - Sonic Orbit 3D Clone</title>
+<script type="module" src="https://unpkg.com/@google/model-viewer@3.4.0/dist/model-viewer.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@800&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#D4AF37;--gold2:#FFD700;--bg:#050507;--card:#111113;--line:rgba(212,175,55,.22)}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:#fff;font-family:Inter,sans-serif}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#000;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:99}
+.logo{font-family:Playfair Display;font-weight:800;color:var(--gold)}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;max-width:1280px;margin:18px auto;padding:0 14px}
+.viewer-wrap{background:radial-gradient(600px at 30% 20%,rgba(212,175,55,.25),transparent),#0e0e10;border:1px solid var(--line);border-radius:20px;overflow:hidden;position:relative}
+model-viewer{width:100%;height:560px}
+.hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);border:1px solid var(--line);padding:6px 12px;border-radius:20px;font-size:11px}
+.details{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px}
+.badge{display:inline-block;background:linear-gradient(90deg,var(--gold),var(--gold2));color:#000;padding:6px 12px;border-radius:20px;font-weight:900;font-size:10px}
+h1{font-family:Playfair Display;font-size:34px;margin:10px 0}
+.price{font-size:32px;color:var(--gold);font-weight:900}.old{color:#777;text-decoration:line-through;font-size:14px;margin-left:8px}
+.desc{color:#aaa;font-size:13px;line-height:1.6;margin:10px 0}
+.btn{padding:14px;border-radius:12px;border:0;font-weight:900;cursor:pointer}
+.primary{background:linear-gradient(90deg,var(--gold),var(--gold2));color:#000}
+.wa{background:#25D366;color:#fff}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:16px auto;max-width:1280px}
+input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin:5px 0 10px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.prod{background:#0f0f0f;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.prod img{width:100%;height:170px;object-fit:cover}.prod .inf{padding:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:900px){.hero{grid-template-columns:1fr}model-viewer{height:420px}}
+</style></head><body>
+<div class="nav"><div class="logo">SEYAM BIKROY ◆ 3D SONIC CLONE</div><div style="font-size:11px">Bkash 01603176361 | WA 01993239956</div></div>
+<div class="hero">
+<div class="viewer-wrap">
+<model-viewer src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="Nova Aura X 3D" auto-rotate camera-controls ar shadow-intensity="1"></model-viewer>
+<div class="hint">Drag to rotate · Pinch or scroll to zoom · 3D</div>
+</div>
+<div class="details">
+<span class="badge">FLAGSHIP · 3D · NOISE CANCELLING · 40H</span>
+<h1>Nova Aura X</h1>
+<div><span class="price">৳41,880</span><span class="old">৳55,000</span></div>
+<p class="desc">Flagship wireless over-ear headphones with adaptive noise cancelling, 40-hour battery. Drag kore 360° ghuraiya dekho.</p>
+<div class="grid2">
+<button class="btn primary" onclick="let id='SEYAM-'+Math.floor(1000+Math.random()*9000);alert('Order ID '+id+' - Bkash 01603176361');window.open('https://wa.me/8801993239956?text=Nova Aura X Order '+id,'_blank')">🛒 Order Now</button>
+<button class="btn wa" onclick="window.open('https://wa.me/8801993239956?text=Nova Aura X 3D order','_blank')">💬 WhatsApp</button>
+</div>
+<p style="font-size:11px;color:#888;margin-top:10px">📍 Maulvi Bazar · FB fb.com/share/1Dxuf8YsZs/ · 127+ Clients 4.8★ · SEYAM-XXXX Tracking</p>
+</div>
+</div>
+<div class="panel">
+<h2 style="color:#D4AF37">➕ Add Product</h2>
+<div class="grid2"><div><input id="pname" placeholder="Name"><input id="pprice" type="number" placeholder="Price"><input id="pstock" type="number" placeholder="Stock"></div><div><input id="pimg" placeholder="Image URL"><input id="pcolor" placeholder="Color"><textarea id="pdesc" placeholder="Description"></textarea></div></div>
+<button class="btn primary" onclick="addP()">💾 Save</button> <span id="msg" style="color:#D4AF37"></span>
+<input id="search" placeholder="🔎 Search..." oninput="render()" style="margin-top:12px;max-width:400px">
+<div id="products" class="products" style="margin-top:12px"></div>
+</div>
+<script>
+const KEY="seyam_bikroy_products_v4";let items=[];try{let s=localStorage.getItem(KEY);items=s?JSON.parse(s):[];if(!Array.isArray(items))items=[]}catch(e){items=[]}
+if(items.length<2){items=[{id:'d1',name:'Nova Aura X - Flagship',price:41880,stock:5,color:'Black Gold',category:'Electronics',description:'Flagship 3D demo',image:'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=600'},...items]}
+function persist(){localStorage.setItem(KEY,JSON.stringify(items))}
+function addP(){let p={id:'p'+Date.now(),name:document.getElementById('pname').value||'New',price:Number(document.getElementById('pprice').value)||0,stock:Number(document.getElementById('pstock').value)||1,color:document.getElementById('pcolor').value||'Black',category:'General',description:document.getElementById('pdesc').value||'',image:document.getElementById('pimg').value||'https://placehold.co/600x400'};items.unshift(p);persist();render();document.getElementById('msg').textContent='✅ Saved';}
+function render(){let q=(document.getElementById('search').value||'').toLowerCase();let root=document.getElementById('products');root.innerHTML='';items.filter(x=>(x.name).toLowerCase().includes(q)).forEach(p=>{let d=document.createElement('div');d.className='prod';d.innerHTML=`<img src="${p.image}"><div class="inf"><b>${p.name}</b><div style="color:var(--gold);font-weight:900">৳${p.price}</div><div style="font-size:11px;color:#777">Stock ${p.stock}</div><button class="btn primary" style="width:100%;margin-top:6px;padding:8px" onclick="let id='SEYAM-'+Math.floor(1000+Math.random()*9000);alert('Order '+id);window.open('https://wa.me/8801993239956?text=Order '+encodeURIComponent('${p.name}')+' '+id,'_blank')">Order</button></div>`;root.appendChild(d)})}
+render();
+</script></body></html>
